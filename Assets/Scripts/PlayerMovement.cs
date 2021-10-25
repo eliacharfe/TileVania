@@ -14,6 +14,11 @@ public class PlayerMovement : MonoBehaviour
    [SerializeField] float jumpSpeed = 25f;
    [SerializeField] float climbSpeed = 5f;
    [SerializeField] float gravityScaleStart = 8f;
+   [SerializeField] Vector2 deathKick = new Vector2(10f, 10f);
+   [SerializeField] GameObject bullet;
+   [SerializeField] Transform gun;
+
+   bool isAlive = true;
    
     void Start()
     {
@@ -25,19 +30,33 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if(!isAlive)
+        { return;}
         Run();
         FlipSprite();
         ClimbLadder();
+        Die();
+    }
+
+    void OnFire(InputValue value)
+    {
+        if(!isAlive)
+        { return;}
+        Instantiate(bullet, gun.position, transform.rotation);
     }
 
     void OnMove(InputValue value)
     {
+        if(!isAlive)
+        { return;}
         moveInput = value.Get<Vector2>();
         Debug.Log(moveInput);
     }
      
     void OnJump(InputValue value)
     {
+        if(!isAlive)
+        { return;}
         if (!myCapsuleCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
            return;
 
@@ -83,5 +102,17 @@ public class PlayerMovement : MonoBehaviour
         myAnimator.SetBool("isClimbing", playerHasVerticalSpeed);
 
     }
+
+    void Die() 
+    {
+        if(myRigidbody.IsTouchingLayers(LayerMask.GetMask("Enemies", "Spikes")))
+        {
+            isAlive = false;
+            myAnimator.SetTrigger("Dying");
+            myRigidbody.velocity = deathKick;
+        }
+    }
+
+   
 
 }
