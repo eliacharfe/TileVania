@@ -1,2 +1,2 @@
 # TileVania
-Simple game made on Unity (in progress)
+Simple game made on Unity (in progress).
